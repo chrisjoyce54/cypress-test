@@ -272,7 +272,7 @@ describe("First test suite", () => {
         });
     });
 
-     it.only('Datepickers Lesson 17', () => {
+     it('Datepickers Lesson 17', () => {
         cy.visit('/')
         cy.contains('Forms').click();
         cy.contains('Datepicker').click();
@@ -293,7 +293,7 @@ describe("First test suite", () => {
             }); 
      });
 
-     it.only('Datepickers2 Lesson 17', () => {
+     it('Datepickers2 Lesson 17', () => {
         cy.visit('/')
         cy.contains('Forms').click();
         cy.contains('Datepicker').click();
@@ -314,7 +314,7 @@ describe("First test suite", () => {
             }); 
      });
      
-     it.only('Datepickers3 Lesson 17', () => {
+     it('Datepickers3 Lesson 17', () => {
         cy.visit('/')
         cy.contains('Forms').click();
         cy.contains('Datepicker').click();
@@ -335,7 +335,7 @@ describe("First test suite", () => {
             }); 
      });
      
-     it.only('Datepickers3 Lesson 17', () => {
+     it('Datepickers3 Lesson 17', () => {
         cy.visit('/')
         cy.contains('Forms').click();
         cy.contains('Datepicker').click();
@@ -367,5 +367,58 @@ describe("First test suite", () => {
                  cy.get('nb-calendar-day-picker [class="day-cell ng-star-inserted"]').contains(futureDay).click()
              }
          });
-     }
+     };
+
+     it('Popups and Tool tips Lesson 18', () => {
+        cy.visit('/')
+        cy.contains('Modal & Overlays').click();
+        cy.contains('Tooltip').click();
+
+        cy.contains('nb-card', 'Colored Tooltips')
+            .contains('Default').click(); // you can also trigger mouseover event
+
+        cy.get('nb-tooltip').should('contain', 'This is a tooltip');
+
+     });
+
+     it('Pop up not in DOM The bad way Lesson 18', () => {
+         cy.visit('/')
+         cy.contains('Tables & Data').click();
+         cy.contains('Smart Table').click();
+
+         cy.get('tbody tr').first().find('.nb-trash').click();
+
+         // if no window confirm, the assertion won't be called
+         cy.on('window:confirm', (confirm) => {
+            expect(confirm).to.equal('Are you sure you want to delete?');
+         });
+     }); 
+
+     it('Pop up not in DOM The better way Lesson 18', () => {
+         cy.visit('/')
+         cy.contains('Tables & Data').click();
+         cy.contains('Smart Table').click();
+
+         const stub = cy.stub();
+         cy.on('window:confirm', stub); 
+         // if no window confirm, stub will be empty, and assertion will fail
+         cy.get('tbody tr').first().find('.nb-trash').click().then(() => {
+             expect(stub.getCall(0)).to.be.calledWith('Are you sure you want to delete?')
+         });
+     }); 
+
+     it('Pop up not in DOM The better way Select cancel on dialog box Lesson 18', () => {
+         cy.visit('/')
+         cy.contains('Tables & Data').click();
+         cy.contains('Smart Table').click();
+
+         const stub = cy.stub();
+         cy.on('window:confirm', stub); 
+         // if no window confirm, stub will be empty, and assertion will fail
+         cy.get('tbody tr').first().find('.nb-trash').click().then(() => {
+             expect(stub.getCall(0)).to.be.calledWith('Are you sure you want to delete?')
+         });
+
+         cy.on('window:confirm',  () => false);
+    }); 
 });
