@@ -1,3 +1,4 @@
+import { of } from "rxjs";
 
 describe("First test suite", () => {
         it('First test Lesson 10', () => {
@@ -146,7 +147,7 @@ describe("First test suite", () => {
                 });
     });
 
-    it('assert property', () => {
+    it('assert property Lesson 13', () => {
         
         cy.visit('/')
         cy.contains('Forms').click();
@@ -162,112 +163,209 @@ describe("First test suite", () => {
             });
         });
 
-        it('Radio Buttons Lesson 14', () => {
-            
-            cy.visit('/')
-            cy.contains('Forms').click();
-            cy.contains('Form Layout').click();
+    it('Radio Buttons Lesson 14', () => {
+        
+        cy.visit('/')
+        cy.contains('Forms').click();
+        cy.contains('Form Layout').click();
 
-            cy.contains('nb-card', 'Using the Grid')
-                .find('[type="radio"]').then(radio => {
-                cy.wrap(radio)
-                    .first()
-                    .check({force: true})  // check won't work by itself, becauase it's "visuall-hidden"
-                    .should('be.checked');  
+        cy.contains('nb-card', 'Using the Grid')
+            .find('[type="radio"]').then(radio => {
+            cy.wrap(radio)
+                .first()
+                .check({force: true})  // check won't work by itself, becauase it's "visuall-hidden"
+                .should('be.checked');  
+        
+            cy.wrap(radio)
+                .eq(1)
+                .check({force: true})  // check won't work by itself, becauase it's "visuall-hidden"
+                .should('be.checked');  
             
-                cy.wrap(radio)
-                    .eq(1)
-                    .check({force: true})  // check won't work by itself, becauase it's "visuall-hidden"
-                    .should('be.checked');  
+            cy.wrap(radio)
+                .first()
+                .should('not.be.checked');
                 
-                cy.wrap(radio)
-                    .first()
-                    .should('not.be.checked');
-                    
-                cy.wrap(radio)
-                    .eq(2)
-                    .should('be.disabled');
-            })
+            cy.wrap(radio)
+                .eq(2)
+                .should('be.disabled');
+        })
+    });
+
+    it('Checkboxes Lesson 14', () => {
+        
+        cy.visit('/')
+        cy.contains('Modal & Overlays').click();
+        cy.contains('Toastr').click();
+
+        cy.get('[type="checkbox"]').check({force: true}); // Check method only turns on, won't uncheck if already checked
+
+        cy.get('[type="checkbox"]').eq(0).click({force: true});
+    });
+
+    it('lists and dropdowns lesson 15', () => {
+        cy.visit('/');
+
+        cy.get('nav nb-select').click(); // will cause the dropdown to display
+        cy.get('.options-list').contains('Dark').click();
+        cy.get('nav nb-select').should('contain', 'Dark');
+        cy.get('nb-layout-header nav').should('have.css', 'background-color', 'rgb(34, 43, 69)');
+
+        // Loop through all items
+        cy.get('nav nb-select').then(dropdown => {
+            cy.wrap(dropdown).click();
+            cy.get('.options-list nb-option').each((listItem, index) => {
+                const itemText = listItem.text().trim();
+
+                const colors = {
+                    "Light": "rgb(255, 255, 255)",
+                    "Dark": "rgb(34, 43, 69)",
+                    "Cosmic": "rgb(50, 50, 89)",
+                    "Corporate": "rgb(255, 255, 255)"
+                }
+
+                cy.wrap(listItem).click();
+                cy.wrap(dropdown).should('contain', itemText);
+                cy.get('nb-layout-header nav').should('have.css', 'background-color', colors[itemText]);
+                if(index < 3){
+                    cy.wrap(dropdown).click();
+                }
+            });
+
+        });
+    });
+
+    it('Web Tables Lesson 16', () => {
+        cy.visit('/')
+        cy.contains('Tables & Data').click();
+        cy.contains('Smart Table').click();
+
+        cy.get('tbody').contains('tr', 'Larry').then(tableRow => {
+            cy.wrap(tableRow).find('.nb-edit').click();
+            cy.wrap(tableRow).find('[placeholder="Age"]').clear().type('25');
+            cy.wrap(tableRow).find('.nb-checkmark').click();
+            cy.wrap(tableRow).find('td').eq(6).should('contain', '25');
         });
 
-        it('Checkboxes Lesson 14', () => {
-            
-            cy.visit('/')
-            cy.contains('Modal & Overlays').click();
-            cy.contains('Toastr').click();
-
-            cy.get('[type="checkbox"]').check({force: true}); // Check method only turns on, won't uncheck if already checked
-
-            cy.get('[type="checkbox"]').eq(0).click({force: true});
+        cy.get('thead').find('.nb-plus').click();
+        cy.get('thead').find('tr').eq(2).then(row => {
+            cy.wrap(row).find('[placeholder="First Name"]').type('Chris');
+            cy.wrap(row).find('[placeholder="Last Name"]').type('Joyce');
+            cy.wrap(row).find('.nb-checkmark').click();
+        });
+        cy.get('tbody tr').first().find('td').then(columns => {
+            cy.wrap(columns).eq(2).should('contain', 'Chris');
+            cy.wrap(columns).eq(3).should('contain', 'Joyce');                
         });
 
-        it('lists and dropdowns lesson 15', () => {
-            cy.visit('/');
+        const age = [20, 30, 40, 200];
 
-            cy.get('nav nb-select').click(); // will cause the dropdown to display
-            cy.get('.options-list').contains('Dark').click();
-            cy.get('nav nb-select').should('contain', 'Dark');
-            cy.get('nb-layout-header nav').should('have.css', 'background-color', 'rgb(34, 43, 69)');
-
-            // Loop through all items
-            cy.get('nav nb-select').then(dropdown => {
-                cy.wrap(dropdown).click();
-                cy.get('.options-list nb-option').each((listItem, index) => {
-                    const itemText = listItem.text().trim();
-
-                    const colors = {
-                        "Light": "rgb(255, 255, 255)",
-                        "Dark": "rgb(34, 43, 69)",
-                        "Cosmic": "rgb(50, 50, 89)",
-                        "Corporate": "rgb(255, 255, 255)"
-                    }
-
-                    cy.wrap(listItem).click();
-                    cy.wrap(dropdown).should('contain', itemText);
-                    cy.get('nb-layout-header nav').should('have.css', 'background-color', colors[itemText]);
-                    if(index < 3){
-                        cy.wrap(dropdown).click();
-                    }
-                });
-
+        cy.wrap(age).each(age => {
+            cy.get('thead [placeholder="Age"]').clear().type(age);
+            cy.wait(500); // delay so filtering can take place
+            cy.get('tbody tr').each(row => {
+                if(age == 200) {
+                    cy.wrap(row).should('contain', 'No data found');
+                } else {
+                    cy.wrap(row).find('td').eq(6).should('contain', age);
+                }
             });
         });
+    });
 
-        it.only('Web Tables Lesson 16', () => {
-            cy.visit('/')
-            cy.contains('Tables & Data').click();
-            cy.contains('Smart Table').click();
+     it.only('Datepickers Lesson 17', () => {
+        cy.visit('/')
+        cy.contains('Forms').click();
+        cy.contains('Datepicker').click();
 
-            cy.get('tbody').contains('tr', 'Larry').then(tableRow => {
-                cy.wrap(tableRow).find('.nb-edit').click();
-                cy.wrap(tableRow).find('[placeholder="Age"]').clear().type('25');
-                cy.wrap(tableRow).find('.nb-checkmark').click();
-                cy.wrap(tableRow).find('td').eq(6).should('contain', '25');
-            });
+        let date = new Date();
+        date.setDate(date.getDate() + 21);
+        let futureDay = date.getDate();
+        let futureMonth = date.toLocaleString('default', {month: 'short'});
+        const dateAssert = futureMonth+' '+futureDay+', '+date.getFullYear();
 
-            cy.get('thead').find('.nb-plus').click();
-            cy.get('thead').find('tr').eq(2).then(row => {
-                cy.wrap(row).find('[placeholder="First Name"]').type('Chris');
-                cy.wrap(row).find('[placeholder="Last Name"]').type('Joyce');
-                cy.wrap(row).find('.nb-checkmark').click();
-            });
-            cy.get('tbody tr').first().find('td').then(columns => {
-                cy.wrap(columns).eq(2).should('contain', 'Chris');
-                cy.wrap(columns).eq(3).should('contain', 'Joyce');                
-            });
+        cy.contains('nb-card', 'Common Datepicker')
+            .find('input')
+            .then(input => {
+                cy.wrap(input).click(); // cannot click on jQuery element need to convert back to cypress   
+                selectDayFromCurrent(futureDay, futureMonth);
+                
+                cy.wrap(input).invoke('prop', 'value').should('contain', dateAssert);
+            }); 
+     });
 
-            const age = [20, 30, 40, 200];
+     it.only('Datepickers2 Lesson 17', () => {
+        cy.visit('/')
+        cy.contains('Forms').click();
+        cy.contains('Datepicker').click();
 
-            cy.wrap(age).each(age => {
-                cy.get('thead [placeholder="Age"]').clear().type(age);
-                cy.wait(500); // delay so filtering can take place
-                cy.get('tbody tr').each(row => {
-                    if(age == 200) {
-                        cy.wrap(row).should('contain', 'No data found');
-                    } else {
-                        cy.wrap(row).find('td').eq(6).should('contain', age);
-                    }
-                });
-            });
-        });
+        let date = new Date();
+        date.setDate(date.getDate() + 2);
+        let futureDay = date.getDate();
+        let futureMonth = date.toLocaleString('default', {month: 'short'});
+        const dateAssert = futureMonth+' '+futureDay+', '+date.getFullYear();
+
+        cy.contains('nb-card', 'Common Datepicker')
+            .find('input')
+            .then(input => {
+                cy.wrap(input).click(); // cannot click on jQuery element need to convert back to cypress   
+                selectDayFromCurrent(futureDay, futureMonth);
+
+                cy.wrap(input).invoke('prop', 'value').should('contain', dateAssert);
+            }); 
+     });
+     
+     it.only('Datepickers3 Lesson 17', () => {
+        cy.visit('/')
+        cy.contains('Forms').click();
+        cy.contains('Datepicker').click();
+
+        let date = new Date();
+        date.setDate(date.getDate() + 71);
+        let futureDay = date.getDate();
+        let futureMonth = date.toLocaleString('default', {month: 'short'});
+        const dateAssert = futureMonth+' '+futureDay+', '+date.getFullYear();
+
+        cy.contains('nb-card', 'Common Datepicker')
+            .find('input')
+            .then(input => {
+                cy.wrap(input).click(); // cannot click on jQuery element need to convert back to cypress   
+                selectDayFromCurrent(futureDay, futureMonth);
+                
+                cy.wrap(input).invoke('prop', 'value').should('contain', dateAssert);
+            }); 
+     });
+     
+     it.only('Datepickers3 Lesson 17', () => {
+        cy.visit('/')
+        cy.contains('Forms').click();
+        cy.contains('Datepicker').click();
+
+        let date = new Date();
+        date.setDate(date.getDate() + 271);
+        let futureDay = date.getDate();
+        let futureMonth = date.toLocaleString('default', {month: 'short'});
+        const dateAssert = futureMonth+' '+futureDay+', '+date.getFullYear();
+
+        cy.contains('nb-card', 'Common Datepicker')
+            .find('input')
+            .then(input => {
+                cy.wrap(input).click(); // cannot click on jQuery element need to convert back to cypress   
+                selectDayFromCurrent(futureDay, futureMonth);
+                
+                cy.wrap(input).invoke('prop', 'value').should('contain', dateAssert);
+            }); 
+     });
+                
+     function selectDayFromCurrent(futureDay: number, futureMonth: string){
+         console.log('LOG futureDay ' + futureDay);
+         console.log('LOG futureMonth ' + futureMonth);
+         cy.get('nb-calendar-navigation').invoke('attr', 'ng-reflect-date').then(dateAttr => {
+             if(!dateAttr.includes(futureMonth)) {
+                 cy.get('[data-name="chevron-right"]').click();
+                 selectDayFromCurrent(futureDay, futureMonth);
+             } else {             
+                 cy.get('nb-calendar-day-picker [class="day-cell ng-star-inserted"]').contains(futureDay).click()
+             }
+         });
+     }
 });
