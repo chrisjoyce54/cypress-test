@@ -6,7 +6,7 @@ import { onSmartTablePage } from "../support/page_objects/smartTablePage";
 describe.only('Test with Page Objects', () => {
     
     beforeEach('open application', () => { 
-        cy.visit('/');
+        cy.openHomePage();
         console.log('Visited');
     });
 
@@ -30,6 +30,5 @@ describe.only('Test with Page Objects', () => {
         onSmartTablePage.updateAgeByFirstName('Chris', '35')
         onSmartTablePage.deleteRowByIndex(1)
 
-    })
-
+    });
 });
