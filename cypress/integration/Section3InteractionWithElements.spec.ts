@@ -114,7 +114,7 @@ describe("First test suite", () => {
 
     it('invoke command Lesson 13', () => {
         
-        cy.visit('/')
+        cy.visit('/');
         cy.contains('Forms').click();
         cy.contains('Form Layouts').click();
 
